@@ -1,0 +1,104 @@
+\documentclass[12pt,a4paper]{article}
+
+% Pacotes úteis
+\usepackage[utf8]{inputenc}   % Acentos
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}         % Figuras
+\usepackage{array}            % Tabelas mais bonitas
+\usepackage{longtable}        % Tabelas grandes
+\usepackage{geometry}         % Margens
+\usepackage{rotating}
+
+\geometry{a4paper, margin=2cm}
+
+% Informações de capa
+\title{Relatório de Verificação Funcional \\ 
+Decoder Scancode para ASCII}
+\author{Bernardo Farinon}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Introdução}
+Este relatório apresenta os resultados da verificação funcional do circuito lógico 
+CUV, fornecido pelo professor, 
+comparado a um modelo de referência funcional (Golden Model)
+desenvolvido de acordo com a especificação do projeto. 
+
+O objetivo foi validar se o CUV implementa corretamente a conversão de códigos 
+\textit{scancode} para \textit{ASCII}, considerando apenas os caracteres alfanuméricos 
+(A--Z e 0--9). Entradas fora desse conjunto devem resultar em \texttt{0xFF}. 
+
+\section{Metodologia}
+\begin{itemize}
+    \item Foi desenvolvido um Golden Model em VHDL, implementando a conversão direta 
+    de scancodes para seus equivalentes ASCII.
+    \item Foi criado um testbench que aplica todos os valores possíveis 
+    (\texttt{0x00} a \texttt{0xFF}) simultaneamente no CUV e no Golden.
+    \item As saídas de ambos foram comparadas automaticamente durante a simulação no QuestaSim.
+    \item Divergências foram registradas em uma tabela de verificação.
+\end{itemize}
+
+\section{Resultados da Verificação}
+A Tabela~\ref{tab:verificacao} mostra as divergências encontradas entre o CUV 
+e o Golden Model. Para cada caso, são apresentados: a entrada em hexadecimal e decimal, 
+o resultado esperado (Golden), e o resultado obtido (CUV).
+
+{\scriptsize
+\begin{longtable}{|c|c|c|c|c|c|}
+\hline
+\textbf{Entrada (HEX)} & \textbf{Entrada (DEC)} & 
+\textbf{Esperado (HEX)} & \textbf{Esperado (DEC)} & 
+\textbf{Obtido (HEX)} & \textbf{Obtido (DEC)} \\
+\hline
+\endfirsthead
+\hline
+\textbf{Entrada (HEX)} & \textbf{Entrada (DEC)} & 
+\textbf{Esperado (HEX)} & \textbf{Esperado (DEC)} & 
+\textbf{Obtido (HEX)} & \textbf{Obtido (DEC)} \\
+\hline
+\endhead
+0x14 & 20  & 0xFF & 255 & 0x09 & 9   \\ \hline
+0x20 & 32  & 0xFF & 255 & 0x03 & 3   \\ \hline
+0x21 & 33  & 0x43 & 67  & 0x03 & 3   \\ \hline
+0x2B & 43  & 0x46 & 70  & 0x66 & 102 \\ \hline
+0x31 & 49  & 0x4E & 78  & 0xB1 & 177 \\ \hline
+0x3D & 61  & 0x37 & 55  & 0x07 & 7   \\ \hline
+0x43 & 67  & 0x49 & 73  & 0x94 & 148 \\ \hline
+0x49 & 73  & 0xFF & 255 & 0x05 & 5   \\ \hline
+0x53 & 83  & 0xFF & 255 & 0x02 & 2   \\ \hline
+0x81 & 129 & 0xFF & 255 & 0x10 & 16  \\ \hline
+0x83 & 131 & 0xFF & 255 & 0x07 & 7   \\ \hline
+0x85 & 133 & 0xFF & 255 & 0x06 & 6   \\ \hline
+\end{longtable}
+}
+
+\label{tab:verificacao}
+
+Além da tabela numérica, a Figura~\ref{fig:ondas} mostra a forma de onda obtida 
+na simulação do testbench no QuestaSim. 
+
+Observa-se o sinal de entrada \texttt{scancode\_in}, e as saídas 
+\texttt{ascii\_cuv} e \texttt{ascii\_golden}. 
+Nos instantes correspondentes aos scancodes divergentes, os sinais de saída não coincidem, 
+confirmando as diferenças listadas na Tabela~\ref{tab:verificacao}.
+
+\begin{figure}[h!]
+    \centering
+\includegraphics[width=\textwidth]{images/waveform.png}
+    \caption{Divergências entre o CUV e o Golden Model.}
+    \label{fig:ondas}
+\end{figure}
+
+\section{Conclusão}
+A verificação funcional mostrou que:
+\begin{itemize}
+    \item O Golden Model implementa corretamente a especificação.
+    \item O CUV apresentou divergências em determinados scancodes.
+
+\end{itemize}
+
+
+\end{document}
